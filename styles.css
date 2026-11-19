@@ -201,3 +201,31 @@ body {
 .pause-glyph { display: none; }
 .clickwheel.playing .play-glyph { display: none; }
 .clickwheel.playing .pause-glyph { display: block; }
+
+.now-playing {
+  height: 100%; display: flex; flex-direction: column; justify-content: center;
+  padding: 6px 12px 4px; background: linear-gradient(140deg, #f5f7f9, #dce3ea);
+}
+.np-main { display: flex; align-items: center; gap: 10px; min-width: 0; }
+.np-art {
+  width: 57px; height: 57px; flex: none; border: 1px solid #b4bdc7;
+  box-shadow: 0 1px 2px #5555; background: linear-gradient(145deg, #9cbbd5, #e6e4d8 48%, #71899c);
+  display: grid; place-items: center; color: white; font-size: 20px;
+}
+.np-copy { min-width: 0; }
+.np-title { font-weight: bold; font-size: 12px; white-space: nowrap; text-overflow: ellipsis; overflow: hidden; margin-bottom: 5px; }
+.np-artist { font-size: 10px; color: #58646e; white-space: nowrap; text-overflow: ellipsis; overflow: hidden; }
+.np-album { font-size: 9px; color: #78828b; margin-top: 3px; }
+.np-progress { margin-top: 11px; }
+.np-times { display: flex; justify-content: space-between; margin-top: 3px; font-size: 8px; color: #5f6a73; }
+input[type='range'] { appearance: none; background: transparent; cursor: pointer; }
+input[type='range']::-webkit-slider-runnable-track { height: 3px; border-radius: 3px; background: #b7bbbd; }
+input[type='range']::-webkit-slider-thumb { appearance: none; width: 11px; height: 11px; margin-top: -4px; border-radius: 50%; background: linear-gradient(#fff, #c7c9ca); border: 1px solid #929697; }
+input[type='range']::-moz-range-track { height: 3px; border-radius: 3px; background: #b7bbbd; }
+input[type='range']::-moz-range-thumb { width: 10px; height: 10px; border-radius: 50%; background: linear-gradient(#fff, #c7c9ca); border: 1px solid #929697; }
+.np-seek { display: block; width: 100%; height: 12px; margin: 3px 0 0; }
+.np-seek::-webkit-slider-runnable-track { height: 3px; border-radius: 4px; background: #aab5bf; }
+.np-seek::-webkit-slider-thumb { appearance: none; width: 10px; height: 10px; margin-top: -3.5px; border: 1px solid #315f87; border-radius: 50%; background: linear-gradient(#89b3d6, #3775aa); }
+.np-seek::-moz-range-track { height: 3px; border-radius: 4px; background: #aab5bf; }
+.np-seek::-moz-range-progress { height: 3px; background: #5389b8; }
+.np-seek::-moz-range-thumb { width: 9px; height: 9px; border: 1px solid #315f87; border-radius: 50%; background: #5890bd; }
