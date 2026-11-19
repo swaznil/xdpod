@@ -13,6 +13,7 @@ body {
   width: min(100%, 470px);
   min-height: 100vh;
   display: flex;
+  flex-direction: column;
   align-items: center;
   justify-content: center;
   padding: 22px 24px 28px;
@@ -190,6 +191,7 @@ body {
   border-radius: 50%;
   background: linear-gradient(145deg, #fdfdfd, #f3f4f4 60%, #dedfe0);
   box-shadow: inset 0 1px 5px #fff, 0 2px 5px #6668, 0 1px 0 1px #c7c9ca;
+  touch-action: none;
 }
 .clickwheel:before {
   content: '';
