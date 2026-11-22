@@ -5,7 +5,7 @@ body {
   display: flex;
   justify-content: center;
   align-items: center;
-  background: radial-gradient(ellipse at 50% 37%, #fff 0, #f2f2f1 34%, #d9dadb 100%);
+  background: radial-gradient(ellipse at 50% 37%, #fff 0, #f2f2f2 34%, #e8e8e8 100%);
   color: #25282a;
   font-family: Arial, Helvetica, sans-serif;
 }
@@ -35,7 +35,7 @@ body {
   inset: 2px 4px 3px;
   z-index: -1;
   border-radius: 31px 31px 37px 37px;
-  background: linear-gradient(108deg, #f8f8f8, #d1d3d4 21%, #f9f9f9 40%, #d7d9da 68%, #fbfbfb);
+  background: linear-gradient(108deg, #f8f8f8, #d9dcdd 21%, #f9f9f9 40%, #d8dbdc 68%, #fbfbfb);
 }
 .ipod:hover { filter: brightness(1.015); }
 .face {
@@ -45,7 +45,7 @@ body {
   display: flex;
   align-items: center;
   flex-direction: column;
-  background: linear-gradient(105deg, #d4d6d7, #f7f8f8 16%, #e9ebec 49%, #f8f8f8 82%, #d2d4d5);
+  background: linear-gradient(105deg, #dbdee0, #f5f8f8 16%, #e9ecec 49%, #f8f8f8 82%, #d2d5d6);
 }
 .device-brand {
   height: 42px;
@@ -63,7 +63,7 @@ body {
   height: 228px;
   padding: 10px;
   border-radius: 9px;
-  background: linear-gradient(145deg, #a4a7a8, #f6f7f7 16%, #d0d2d3 78%, #a5a8a9);
+  background: linear-gradient(145deg, #a4a7a8, #f6f7f7 16%, #d8d4d4 78%, #a9adae);
   box-shadow: inset 0 1px 4px #62676a88, 0 1px 0 #fff;
 }
 .screen {
@@ -89,14 +89,14 @@ body {
   color: white;
   font-size: 10px;
   font-weight: bold;
-  background: linear-gradient(#a4c3e0, #5488b8 40%, #316caa 50%, #8eb1d2);
+  background: linear-gradient(#a7c5e1, #5488b8 40%, #336ead 50%, #90b2d2);
 }
 .battery {
   width: 18px;
   height: 9px;
   padding: 1px;
   position: relative;
-  border: 1px solid #eef6fd;
+  border: 1px solid #ebf3fa;
   border-radius: 2px;
 }
 .battery:after {
@@ -106,14 +106,14 @@ body {
   top: 2px;
   width: 2px;
   height: 3px;
-  background: #f3f7fa;
+  background: #f3f7f3;
 }
 .battery i { display: block; width: 82%; height: 100%; background: #f3f7fa; }
 .screen-title {
   min-height: 27px;
   padding: 5px 8px 4px;
-  border-bottom: 1px solid #abb7c2;
-  background: linear-gradient(#f9fbfd, #dde4eb);
+  border-bottom: 1px solid #b6c0c9;
+  background: linear-gradient(#f9fbfd, #dde3ea);
   font-size: 13px;
   font-weight: bold;
 }
@@ -138,7 +138,7 @@ body {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  border-bottom: 1px solid #d3dae1;
+  border-bottom: 1px solid #d5dadf;
   color: #111;
   font-size: 12px;
   cursor: pointer;
@@ -157,7 +157,7 @@ body {
   display: flex;
   flex-direction: column;
   justify-content: center;
-  background: linear-gradient(140deg, #f5f7f9, #dce3ea);
+  background: linear-gradient(140deg, #f5f7f9, #e0e6ec);
 }
 .np-main { min-width: 0; display: flex; align-items: center; gap: 10px; }
 .np-art {
@@ -190,7 +190,7 @@ body {
   flex: none;
   border-radius: 50%;
   background: linear-gradient(145deg, #fdfdfd, #f3f4f4 60%, #dedfe0);
-  box-shadow: inset 0 1px 5px #fff, 0 2px 5px #6668, 0 1px 0 1px #c7c9ca;
+  box-shadow: inset 0 1px 5px #fff, 0 2px 5px #6668, 0 1px 0 1px #d1d4d5;
   touch-action: none;
 }
 .clickwheel:before {
@@ -247,7 +247,7 @@ body {
 .engraving {
   margin-top: auto;
   padding: 3px;
-  color: #838789;
+  color: #84898b;
   font-size: 12px;
   font-weight: bold;
   letter-spacing: -0.4px;
@@ -261,12 +261,12 @@ body {
   height: 3px;
   transform: translateX(-50%);
   border-radius: 0 0 4px 4px;
-  background: #9b9e9f;
+  background: #9a9d9e;
   opacity: 0.65;
 }
 .room-note { height: 16px; margin: 11px 0 0; color: #85898b; font-size: 10px; text-align: center; }
 .room-note:empty { visibility: hidden; }
-.add-tracks { color: #6c7174; font-size: 11px; cursor: pointer; }
+.add-tracks { color: #6c7073; font-size: 11px; cursor: pointer; }
 .add-tracks > span { vertical-align: -1px; }
 .add-tracks input { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0, 0, 0, 0); }
 .add-tracks-below {
@@ -343,7 +343,7 @@ input[type="range"]::-moz-range-thumb {
   align-items: center;
   justify-content: center;
   gap: 8px;
-  color: #9da0a2;
+  color: #9b9da0;
 }
 .vertical-volume input {
   width: 16px;

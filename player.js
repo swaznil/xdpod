@@ -22,29 +22,43 @@ const ui = {
   volumeDown: $("#volume-down"),
 };
 const queue = [...tracks];
-let current = -1,
-  page = "home",
-  selected = 0;
+let current = -1;
+let page = "home";
+let selected = 0;
+let wheelAngle = null;
+let wheelRemainder = 0;
 const fmt = (value) =>
   Number.isFinite(value)
     ? `${Math.floor(value / 60)}:${String(Math.floor(value % 60)).padStart(2, "0")}`
     : "0:00";
+const clock = document.querySelector("#device-time");
+
+function updateClock() {
+  const now = new Date();
+  clock.dateTime = now.toISOString();
+  clock.textContent = now.toLocaleTimeString([], {
+    hour: "numeric",
+    minute: "2-digit",
+  });
+}
 
 function setPage(next) {
   page = next;
   selected = Math.min(selected, Math.max(0, rowCount() - 1));
   render();
 }
+
 function rowCount() {
   return page === "home"
     ? current < 0
-      ? 1
-      : 2
+      ? 2
+      : 3
     : page === "songs"
       ? queue.length
       : 0;
 }
-function makeRow(label, icon, index, action) {
+
+function makeRow(label, icon, index, action, arrow = true) {
   const row = document.createElement("li");
   row.className = `menu-row${index === selected ? " selected" : ""}`;
   const left = document.createElement("span");
@@ -57,13 +71,16 @@ function makeRow(label, icon, index, action) {
   text.textContent = label;
   left.append(glyph, text);
   row.append(left);
-  const arrow = document.createElement("span");
-  arrow.className = "row-arrow";
-  arrow.textContent = "›";
-  row.append(arrow);
+  if (arrow) {
+    const chevron = document.createElement("span");
+    chevron.className = "row-arrow";
+    chevron.textContent = "›";
+    row.append(chevron);
+  }
   row.addEventListener("click", action);
   return row;
 }
+
 function homeItems() {
   const items = [];
   if (current >= 0) items.push(["Now Playing", "♫", () => setPage("playing")]);
@@ -75,22 +92,34 @@ function homeItems() {
       setPage("songs");
     },
   ]);
+  items.push(["Add Music", "＋", () => ui.filePicker.click()]);
   return items;
 }
+
 function renderHome() {
-  homeItems().forEach(([label, icon, action], i) =>
+  const items = homeItems();
+  items.forEach(([label, icon, action], i) =>
     ui.view.append(makeRow(label, icon, i, action)),
   );
   ui.title.textContent = "Music";
   ui.footer.textContent = `${queue.length} ${queue.length === 1 ? "song" : "songs"}`;
   ui.footerRight.textContent = "♪";
 }
+
 function renderSongs() {
   ui.title.textContent = "Songs";
   ui.footer.textContent = queue.length
     ? `${Math.min(selected + 1, queue.length)} of ${queue.length}`
     : "No songs";
-  ui.footerRight.textContent = "♪";
+  ui.footerRight.textContent = queue.length ? "♪" : "＋";
+  if (!queue.length) {
+    const empty = document.createElement("div");
+    empty.className = "empty-screen";
+    empty.textContent =
+      "Your music library is empty. Add songs to get started.";
+    ui.view.append(empty);
+    return;
+  }
   const list = document.createElement("ul");
   list.className = "menu-list";
   queue.forEach((track, i) => {
@@ -101,7 +130,11 @@ function renderSongs() {
     list.append(row);
   });
   ui.view.append(list);
+  const active = list.children[selected];
+  if (active && active.offsetTop + active.offsetHeight > ui.view.clientHeight)
+    active.scrollIntoView({ block: "nearest" });
 }
+
 function renderPlaying() {
   const track = queue[current];
   if (!track) {
@@ -155,6 +188,7 @@ function renderPlaying() {
   });
   ui.view.append(container);
 }
+
 function updateNowPlayingProgress() {
   const seek = ui.view.querySelector(".np-seek");
   if (!seek) return;
@@ -165,12 +199,14 @@ function updateNowPlayingProgress() {
   elapsed.textContent = fmt(audio.currentTime);
   duration.textContent = fmt(audio.duration);
 }
+
 function render() {
   ui.view.replaceChildren();
   if (page === "songs") renderSongs();
   else if (page === "playing") renderPlaying();
   else renderHome();
 }
+
 function load(index, autoplay = true) {
   if (index < 0 || index >= queue.length) return;
   current = index;
@@ -185,32 +221,49 @@ function load(index, autoplay = true) {
       render();
     });
 }
+
 function moveSelection(direction) {
   const count = rowCount();
   if (!count) return;
   selected = (selected + direction + count) % count;
   render();
 }
+
 function activate() {
-  if (page === "home") homeItems()[selected]?.[2]();
-  else if (page === "songs") {
+  if (page === "home") {
+    homeItems()[selected]?.[2]();
+  } else if (page === "songs") {
     if (queue.length) load(selected);
-  } else if (current >= 0) togglePlayback();
+    else ui.filePicker.click();
+  } else if (current >= 0) {
+    togglePlayback();
+  }
 }
+
 function togglePlayback() {
   if (current < 0) {
     if (queue.length) load(0);
-  } else if (audio.paused)
+    else ui.filePicker.click();
+  } else if (audio.paused) {
     audio.play().catch(() => {
       ui.message.textContent = "This track could not be played.";
     });
-  else audio.pause();
+  } else audio.pause();
 }
+
 function skip(direction) {
   if (!queue.length) return;
   if (page === "songs" || page === "home") moveSelection(direction);
   else load((current + direction + queue.length) % queue.length);
 }
+$("#menu").addEventListener("click", () => {
+  if (page !== "home") setPage(page === "playing" ? "songs" : "home");
+  else setPage("home");
+});
+$("#select").addEventListener("click", activate);
+$("#previous").addEventListener("click", () => skip(-1));
+$("#next").addEventListener("click", () => skip(1));
+ui.play.addEventListener("click", togglePlayback);
 function changeVolume(delta) {
   const value = Math.max(0, Math.min(1, Number(ui.volume.value) + delta));
   ui.volume.value = String(value);
@@ -218,10 +271,6 @@ function changeVolume(delta) {
 }
 ui.volumeUp.addEventListener("click", () => changeVolume(0.05));
 ui.volumeDown.addEventListener("click", () => changeVolume(-0.05));
-ui.volume.addEventListener("input", (event) => {
-  audio.volume = Number(event.target.value);
-});
-audio.volume = Number(ui.volume.value);
 ui.filePicker.addEventListener("change", (event) => {
   const files = [...event.target.files].filter((file) =>
     file.type.startsWith("audio/"),
@@ -253,13 +302,6 @@ ui.filePicker.addEventListener("change", (event) => {
   }
   event.target.value = "";
 });
-$("#menu").addEventListener("click", () =>
-  setPage(page === "playing" ? "songs" : "home"),
-);
-$("#select").addEventListener("click", activate);
-$("#previous").addEventListener("click", () => skip(-1));
-$("#next").addEventListener("click", () => skip(1));
-ui.play.addEventListener("click", togglePlayback);
 audio.addEventListener("play", () => {
   ui.wheel.classList.add("playing");
   if (page === "playing") render();
@@ -273,4 +315,106 @@ audio.addEventListener("loadedmetadata", updateNowPlayingProgress);
 audio.addEventListener("ended", () => {
   if (queue.length) load((current + 1) % queue.length);
 });
+audio.addEventListener("error", () => {
+  if (current >= 0)
+    ui.message.textContent = "This file could not be played by your browser.";
+});
+ui.volume.addEventListener("input", (event) => {
+  audio.volume = Number(event.target.value);
+});
+audio.volume = Number(ui.volume.value);
+
+ui.wheel.addEventListener(
+  "wheel",
+  (event) => {
+    event.preventDefault();
+    moveSelection(event.deltaY > 0 ? 1 : -1);
+  },
+  { passive: false },
+);
+ui.wheel.addEventListener("pointerdown", (event) => {
+  if (event.target.closest("button")) return;
+  const rect = ui.wheel.getBoundingClientRect();
+  wheelAngle = Math.atan2(
+    event.clientY - (rect.top + rect.height / 2),
+    event.clientX - (rect.left + rect.width / 2),
+  );
+  wheelRemainder = 0;
+  ui.wheel.setPointerCapture(event.pointerId);
+});
+ui.wheel.addEventListener("pointermove", (event) => {
+  if (wheelAngle === null) return;
+  const rect = ui.wheel.getBoundingClientRect();
+  const angle = Math.atan2(
+    event.clientY - (rect.top + rect.height / 2),
+    event.clientX - (rect.left + rect.width / 2),
+  );
+  let delta = angle - wheelAngle;
+  if (delta > Math.PI) delta -= Math.PI * 2;
+  if (delta < -Math.PI) delta += Math.PI * 2;
+  wheelAngle = angle;
+  wheelRemainder += delta;
+  while (Math.abs(wheelRemainder) > 0.42) {
+    const direction = wheelRemainder > 0 ? 1 : -1;
+    moveSelection(direction);
+    wheelRemainder -= direction * 0.42;
+  }
+});
+const endWheel = () => {
+  wheelAngle = null;
+  wheelRemainder = 0;
+};
+ui.wheel.addEventListener("pointerup", endWheel);
+ui.wheel.addEventListener("pointercancel", endWheel);
+document.addEventListener("keydown", (event) => {
+  const activeTag = document.activeElement?.tagName;
+  if (
+    ["INPUT", "TEXTAREA", "SELECT"].includes(activeTag) ||
+    document.activeElement?.isContentEditable ||
+    event.altKey ||
+    event.ctrlKey ||
+    event.metaKey
+  )
+    return;
+
+  if (
+    page === "playing" &&
+    Number.isFinite(audio.duration) &&
+    (event.key === "ArrowUp" || event.key === "ArrowDown")
+  ) {
+    event.preventDefault();
+    audio.currentTime = Math.max(
+      0,
+      Math.min(
+        audio.duration,
+        audio.currentTime + (event.key === "ArrowUp" ? 5 : -5),
+      ),
+    );
+    updateNowPlayingProgress();
+    return;
+  }
+
+  if (event.key === "ArrowDown") {
+    event.preventDefault();
+    moveSelection(1);
+  } else if (event.key === "ArrowUp") {
+    event.preventDefault();
+    moveSelection(-1);
+  } else if (event.key === "Enter" || event.key === " ") {
+    event.preventDefault();
+    activate();
+  } else if (event.key === "Escape" || event.key === "Backspace") {
+    event.preventDefault();
+    setPage(page === "home" ? "home" : page === "playing" ? "songs" : "home");
+  } else if (event.key === "ArrowRight") {
+    event.preventDefault();
+    skip(1);
+  } else if (event.key === "ArrowLeft") {
+    event.preventDefault();
+    skip(-1);
+  }
+});
+
 render();
+updateClock();
+setInterval(updateClock, 30_000);
